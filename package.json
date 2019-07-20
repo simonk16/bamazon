@@ -1,0 +1,23 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "customer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simonk16/bamazon.git"
+  },
+  "author": "simonk16",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/simonk16/bamazon/issues"
+  },
+  "homepage": "https://github.com/simonk16/bamazon#readme",
+  "dependencies": {
+    "inquirer": "^6.5.0",
+    "mysql": "^2.17.1"
+  }
+}
