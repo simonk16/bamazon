@@ -2,7 +2,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var connection = mysql.createConnection({
-    hos: "localhost",
+    host: "localhost",
 
     port: 3306,
 
@@ -92,42 +92,50 @@ function pushOrder(order){
             desired_product_id: order.id,
             desired_quantity: order.amount
         })
+    processOrder(order)
 }
-// function captureInput() {
-//     inquirer.prompt([
-//         {
-//             type: "input",
-//             message: "Product_id , Quantity ",
-//             name: "shoppingList"
-//         }
-//     ]).then(function(answers){
-//         var idQuantityPairs = answers.shoppingList.split(",");
-//         console.log(idQuantityPairs)
-//         for (var i = 0; i < idQuantityPairs.length; i++) {
-//             if (i % 2 === 0) {
-//                 var indexVal = idQuantityPairs[i];
-//                 var indexValTwo = idQuantityPairs[(i+1)]
-                
-//                 newFunc(indexVal, indexValTwo)
-//             } else {
-//                 console.log("odd index, moving to next value")
-//             }
-//         }
-//     })
-// }
+
+function processOrder(order){
+    var id = order.id;
+    var amount = order.amount;
+    console.log(id + " " + amount)
+    var query = "SELECT * FROM products WHERE ?"
+    connection.query(query, {item_id: id}, function(err, res){
+        if (err) throw err;
+        var stockAmount = res[0].stock_quantity
+        var price = res[0].price
+        console.log(stockAmount)
+        if (stockAmount - amount > (-1)) {
+            console.log("Validating...");
+            var query = "UPDATE products SET ? WHERE ?"
+            connection.query(query,
+                [
+                    {
+                        stock_quantity: stockAmount - amount,
+                    },
+                    {
+                        item_id: id
+                    }
+                ],
+                function(err, res){
+                    if (err) throw err;
+                    console.log(res.affectedRows + " rows updated!");
+                    console.log("Your total is $" + price * amount)
+                    return connection.end()
+                }
+                )
+
+        } else {
+            console.log("Sorry, we don't have enough " + res[0].product_name + "\nReturning to mainscreen");
+            connection.end()
+            
+        }
+    })
+}
 
 
 
-// function newFunc(indexVal, indexValTwo) {
-//     var query = "INSERT INTO purchases SET ?"
-//     connection.query(query,
-//         {
-//             desired_product_id: indexVal,
-//             desired_quantity: indexValTwo
-//         },
-//          function(err,res){
-//         if (err) throw err;    
-//         console.log(res.affectedRows);
-        
-//     })
-// }
+
+
+
+
